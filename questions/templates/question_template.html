@@ -1,0 +1,43 @@
+{% load static %}
+
+<div class="card md-row mb-4 shadow-md">
+  <div class="card-body">
+    <div class = "row">
+      <div class="col-auto">
+        <div class="row">
+          <img class="mb-3 ml-3" width="100" height="100" src="{{ form.author.upload.url }}">
+        </div>
+        <div>
+          <button type="button" class="btn btn-default" aria-label="Left Align">
+            <i class="far fa-thumbs-up"></i>
+          </button>
+          {{ form.votes.sum_rating }}
+          <button type="button" class="btn btn-default">
+            <i class="far fa-thumbs-down"></i>
+          </button>
+        </div>
+      </div>
+      {% block content %}
+      <div class = "col-md-10">
+        <a href="{% url 'question_page' question_id=form.id %}"><h5 class="card-title">{{form.title}}</h5></a>
+        <p class="card-text">{{form.text}}</p>
+        <div class="row">
+          <div class="col-md-2 d-flex align-content-stretch flex-wrap">
+            <a href="{% url 'question_page' question_id=form.id %}" class="text-primary">answer({{form.answer_num}})</a>
+          </div>
+          <div class="col-md-10 d-flex align-content-stretch flex-wrap">
+            <div class="d-inline-flex mr-3">
+            {% if form.tags.all %}
+            Tags:
+            </div>
+            {% for tag in form.tags.all %}
+            <a class="mr-1" href="{% url 'tag_page' tag_name=tag %}">{{tag}}</a>
+            {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endblock %}
+    </div>
+  </div>
+</div>

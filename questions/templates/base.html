@@ -1,0 +1,84 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    {% block css %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    {% endblock %}
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+      <a class="navbar-brand" href="{% url 'home_page' %}">Ask Kislukha</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse">
+        <form class="form-inline mt-2 mt-md-0 ml-auto">
+          <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+      </div>
+      <div class="collapse navbar-collapse mr-4" style="min-height: 50px">
+          {% block auth_header %}
+            {% if user %}
+              {% with user as user %}
+                {% include 'sign_header.html' %}
+            {% endwith %}
+            {% else %}
+              {% include 'no_sign_header.html' %}
+            {% endif %}
+          {% endblock %}
+	    </div>
+
+    </nav>
+    <div class="container-fluid">
+      <div class="row">
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4"><div class="chartjs-size-monitor">
+          {% block content %}{% endblock %}
+        </main>
+        <nav class="col-md-2 d-none d-md-block bg-light sidebar ml-auto">
+          <div class="sidebar-sticky">
+            <h2 class="pb-2">Popular tags</h2>
+            <div class="row ml-auto">
+              {% for tag in tags %}
+                <h3 class="mr-4">
+                  <a class="text-dark" href="{% url 'tag_page' tag_name=tag %}">
+                  {{ tag }}
+                  </a>
+                </h3>
+              {% endfor %}
+            </div>
+         </div>
+          <div class="sidebar-sticky">
+          	<h2 class="pb-2 pt-4">Best members</h2>
+          	<ul class="nav flex-column">
+              {% for member in members %}
+        		  <li class="nav-item">
+                <h4><a class="text-dark" href="#">
+                 {{member}}
+                </a>
+	              </h4>
+	            </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </nav>
+      </div>
+    </div>
+	  <div class="push">
+    </div>
+    <footer class="footer mt-4 text-center">
+      <div class="container">
+        <span class="text-muted">All rights reserved. © 2018</span>
+    	</div>
+    </footer>
+	  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+  </body>
+</html>

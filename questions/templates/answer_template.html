@@ -1,0 +1,15 @@
+{% extends 'question_template.html' %}
+
+{% block content %}
+<div class = "col-md-8">
+  <p class="card-text">{{form.text}}</p>
+  <div class="col-md-4 pl-0 pr-2">
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="">
+        <label class="form-check-label" for="defaultCheck">
+            Correct!
+        </label>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% load static %}
+<div class = "row pb-4 border-bottom">
+  <div class="col-auto">
+    <div class="row">
+      <img class="mb-3 ml-3" width="150" height="150" src="{{ form.author.upload.url }}">
+    </div>
+    <div>
+      <button type="button" class="btn btn-default" aria-label="Left Align">
+        <i class="far fa-thumbs-up"></i>
+      </button>
+      {{ form.count_likes }}
+      <button type="button" class="btn btn-default">
+        <i class="far fa-thumbs-down"></i>
+      </button>
+    </div>
+  </div>
+  {% block content %}
+  <div class = "col-md-10">
+    <h2 class="card-title">{{form.title}}</h2>
+    <p class="card-text">{{form.text}}</p>
+    <div class="row">
+      <div class="col-md-10 d-flex align-content-stretch flex-wrap">
+        <div class="d-inline-flex mr-3">
+        {% if form.tags.all %}
+        Tags:
+        </div>
+        {% for tag in form.tags.all %}
+        <a class="mr-1" href="{% url 'tag_page' tag_name=tag %}">{{tag}}</a>
+        {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endblock %}
+</div>
+</div>

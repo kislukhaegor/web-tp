@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+{% endblock %}
+
+{% block content %}
+<div class="col-md-10">
+  <div class="row border-bottom mb-4">
+      <h3 class="font-weight-bold">
+          <span class="mr-2">Tag:</span>
+          <span>{{tag_name}}</span>
+      </h3>
+  </div>
+  {% for question in questions %}
+    {% with question as form %}
+      {% include "question_template.html" %}
+    {% endwith %}
+  {% endfor %}
+</div>
+{% load bootstrap4 %}
+<div class="row justify-content-center">
+  {% bootstrap_pagination questions%}
+</div>
+{% endblock %}

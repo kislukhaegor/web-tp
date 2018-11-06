@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+<link rel="stylesheet" href="{% static 'css/all.css' %}">
+<!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous"> -->
+{% endblock %}
+
+
+{% block content %}
+{% with question as form %}
+  {% include 'question_main_template.html' %}
+{% endwith %}
+<div class="pt-4 col-md-12">
+  {% for answer in answers %}
+    {% with answer as form %}
+      {% include 'answer_template.html' %}
+    {% endwith %}
+  {% endfor %}
+  <div class="form-group row">
+    <div class="col-md-10">
+    <textarea style="resize:none;" maxlength=1500 class="form-control is-invalid" rows="4" placeholder="Enter your comment here"></textarea>
+      <div class="invalid-feedback">
+        enter your comment here
+      </div>
+    </div>
+  </div>
+  <button class="btn btn-default" type="submit">Ask!</button>
+</div>
+{% load bootstrap4 %}
+<div class="row justify-content-center">
+  {% bootstrap_pagination answers%}
+</div>
+{% endblock %}

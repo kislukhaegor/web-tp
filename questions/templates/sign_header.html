@@ -1,0 +1,18 @@
+{% load static %}
+
+<div class="col-auto text-right ml-auto">
+  <img class="d-inline user-avatar" width="50" height="50" src="{{ user.upload.url }}">
+</div>
+<div class="col-auto">
+  <div class="d-inline">
+    <a class="text-white font-italic" src="#">{{user.nickname}}</a>
+  </div>
+  <div class="row">
+    <div class="col-6">
+      <a class="text-white" href="{% url 'settings_page' %}">settings</a>
+    </div>
+    <div class="col-6">
+      <a class="text-white" href="#">log out</a>
+    </div>
+  </div>     
+</div>
