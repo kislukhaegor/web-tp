@@ -10,14 +10,20 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.db.models import Sum
+from django.shortcuts import get_object_or_404
 
 # Create your models here.
 
+class UserManager(models.Manager):
+    def get_bests(self, count):
+        return self.get_queryset().order_by('-rating')[:count]
 
 class User(AbstractUser):
     upload = models.ImageField(upload_to='uploads/%Y/%m/%d/')
     nickname = models.CharField(max_length=40, verbose_name=u"Никнейм")
+    rating = models.IntegerField(default=0, verbose_name=u"Рейтинг пользователя")
 
+    objects = UserManager()
  
 class LikeDislikeManager(models.Manager):
     use_for_related_fields = True
@@ -69,20 +75,22 @@ class Tag(models.Model):
 
 class QuestionManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(is_active=True)
+        return super().get_queryset().filter(is_active=True).annotate(answer_num=models.Count('answers'))
 
-    def get_answers(self):
-        return 
+    def get_by_id(self, id):
+        return get_object_or_404(Question, id=id)
+
+    def get_most_hot(self):
+        return self.get_queryset().order_by('-answer_num')
 
 
 class QuestionTagManager(QuestionManager):
     @staticmethod
     def get_tag_by_title(tag):
-        return Tag.objects.filter(title=tag)
+        return get_object_or_404(Tag, title=tag)
 
     def get(self, tag):
-        tags = QuestionTagManager.get_tag_by_title(tag)
-        return self.get_queryset().filter(tags__in=tags) if len(tags) else None
+        return self.get_queryset().filter(tags=QuestionTagManager.get_tag_by_title(tag))
 
 
 class Question(models.Model):
@@ -93,7 +101,6 @@ class Question(models.Model):
     is_active = models.BooleanField(default=True, verbose_name=u"Доступность вопроса")
     tags = models.ManyToManyField(Tag, blank=True, related_name='questions')
     create_date = models.DateTimeField(default=datetime.now, verbose_name=u"Время создания вопроса")
-    rating = models.IntegerField(default=0)
     votes = GenericRelation(LikeDislike, related_query_name='questions')
     objects = QuestionManager()
     by_tag = QuestionTagManager()

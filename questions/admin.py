@@ -5,7 +5,7 @@ from django.contrib.contenttypes.admin import GenericStackedInline
 
 
 class UserAdmin(admin.ModelAdmin):
-	fields = ['email', 'username', 'nickname', 'upload']
+	fields = ['email', 'username', 'nickname', 'upload', 'rating']
 
 
 class LikeInlineAdmin(GenericStackedInline):
@@ -21,8 +21,14 @@ class QuestionAdmin(admin.ModelAdmin):
     filter_horizontal = ('tags',)
     inlines = [AnswerInlineAdmin, LikeInlineAdmin]
 
+
+class AnswerAdmin(admin.ModelAdmin):
+	model = Answer
+	inlines = [LikeInlineAdmin]
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(Tag)
-admin.site.register(Answer)
+admin.site.register(Answer, AnswerAdmin)
 # Register your models here.

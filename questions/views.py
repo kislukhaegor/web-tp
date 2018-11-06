@@ -13,7 +13,7 @@ class BaseView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['tags'] = Tag.objects.get_most_popular(8)
-        context['members'] = ["Il'ya Saneev", 'Adolf Hitler', 'Jesus Christ']
+        context['members'] = User.objects.get_bests(8)
         context['user'] = User.objects.all()[0]
         return context
 
@@ -31,6 +31,7 @@ class PaginatedView(BaseView):
     def get_context_data(self, **kwargs):
         return super().get_context_data(**kwargs)
 
+
 class IndexView(PaginatedView):
     template_name = "index.html"
     model = Question
@@ -41,15 +42,17 @@ class IndexView(PaginatedView):
         context['questions'] = self.get_page(questions)
         return context
 
+
 class HotQuestionsView(PaginatedView):
     template_name = "hot_questions.html"
     model = Question
 
     def get_context_data(self, **kwargs):
-        questions = self.model.objects.all()
+        questions = self.model.objects.get_most_hot()
         context = super().get_context_data(**kwargs)
         context['questions'] = self.get_page(questions)
         return context
+
 
 class TagView(PaginatedView):
     template_name = "tags.html"
@@ -58,11 +61,9 @@ class TagView(PaginatedView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         questions = self.model.by_tag.get(context['tag_name'])
-        if not questions:
-            raise HttpResponseNotFound
-
         context['questions'] = self.get_page(questions)
         return context
+
 
 class QuestionView(PaginatedView):
     template_name = "question.html"
@@ -70,11 +71,8 @@ class QuestionView(PaginatedView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        try:
-            question = self.model.objects.filter(id=context['question_id'])[0]
-        except IndexError:
-            raise HttpResponseNotFound
-        context['answers'] = self.get_page(question.answers.all())
+        question = self.model.objects.get_by_id(context['question_id'])
+        context['answers'] = self.get_page(question.answers.all()[::-1])
         context['question'] = question
         return context
 
