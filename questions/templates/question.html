@@ -14,7 +14,7 @@
   {% include 'question_main_template.html' %}
 {% endwith %}
 <div class="pt-4 col-md-12">
-  {% for answer in answers %}
+  {% for answer in object_list %}
     {% with answer as form %}
       {% include 'answer_template.html' %}
     {% endwith %}
@@ -31,6 +31,6 @@
 </div>
 {% load bootstrap4 %}
 <div class="row justify-content-center">
-  {% bootstrap_pagination answers%}
+  {% bootstrap_pagination page_obj%}
 </div>
 {% endblock %}

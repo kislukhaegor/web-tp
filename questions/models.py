@@ -14,17 +14,12 @@ from django.shortcuts import get_object_or_404
 
 # Create your models here.
 
-class UserManager(models.Manager):
-    def get_bests(self, count):
-        return self.get_queryset().order_by('-rating')[:count]
-
 class User(AbstractUser):
-    upload = models.ImageField(upload_to='uploads/%Y/%m/%d/')
-    nickname = models.CharField(max_length=40, verbose_name=u"Никнейм")
+    upload = models.ImageField(upload_to='uploads/%Y/%m/%d/', default='uploads/default/default.png')
+    nickname = models.CharField(max_length=40, verbose_name=u"Никнейм", unique=True)
     rating = models.IntegerField(default=0, verbose_name=u"Рейтинг пользователя")
 
-    objects = UserManager()
- 
+
 class LikeDislikeManager(models.Manager):
     use_for_related_fields = True
  
@@ -52,9 +47,11 @@ class LikeDislike(models.Model):
  
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey()
+    content_object = GenericForeignKey('content_type', 'object_id')
  
     objects = LikeDislikeManager()
+    class Meta:
+        unique_together = (('content_type', 'object_id', 'user'),)
 
 
 class TagManager(models.Manager):
@@ -66,7 +63,7 @@ class TagManager(models.Manager):
 
 
 class Tag(models.Model):
-    title = models.CharField(max_length=120, verbose_name=u"Заголовок ярлыка")
+    title = models.CharField(max_length=120, verbose_name=u"Заголовок ярлыка", unique=True)
     objects = TagManager()
 
     def __str__(self):
@@ -116,7 +113,7 @@ class Answer(models.Model):
     id = models.AutoField(primary_key=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="answers")
     Question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="answers")
-    text = models.CharField(max_length=120, verbose_name=u"Ответ на вопрос")
+    text = models.TextField(verbose_name=u"Ответ на вопрос")
     is_correct = models.BooleanField(default=False, verbose_name=u"Корректность ответа")
     is_active = models.BooleanField(default=True, verbose_name=u"Доступность ответа")
     create_date = models.DateTimeField(default=datetime.now, verbose_name=u"Время создания ответа")

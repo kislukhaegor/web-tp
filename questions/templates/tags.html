@@ -15,7 +15,7 @@
           <span>{{tag_name}}</span>
       </h3>
   </div>
-  {% for question in questions %}
+  {% for question in object_list %}
     {% with question as form %}
       {% include "question_template.html" %}
     {% endwith %}
@@ -23,6 +23,6 @@
 </div>
 {% load bootstrap4 %}
 <div class="row justify-content-center">
-  {% bootstrap_pagination questions%}
-</div>
+  {% bootstrap_pagination page_obj%}
+</div>page_obj
 {% endblock %}

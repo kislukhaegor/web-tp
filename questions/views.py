@@ -2,78 +2,80 @@ from django.shortcuts import render
 from django.core.paginator import Paginator
 # Create your views here.
 
-from django.views.generic import TemplateView, View
+from django.views.generic import TemplateView, ListView, DetailView
 from django.shortcuts import render
 from questions.models import *
 
 from django.http import HttpResponseNotFound
 
 
+def get_base_context():
+    context = {}
+    context['tags'] = Tag.objects.get_most_popular(8)
+    context['members'] = User.objects.order_by('-rating')[:8]
+    context['user'] = User.objects.all()[0]
+    return context
+
+
 class BaseView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['tags'] = Tag.objects.get_most_popular(8)
-        context['members'] = User.objects.get_bests(8)
-        context['user'] = User.objects.all()[0]
+        context.update(get_base_context().items())
         return context
 
 
-class PaginatedView(BaseView):
-    objs_in_page = 20
-
-    def get(self, request, *args, **kwargs):
-        self.page = request.GET.get('page') or 1
-        return render(request, self.template_name, context=self.get_context_data(**kwargs))
-
-    def get_page(self, objs):
-        return Paginator(objs, self.objs_in_page).get_page(self.page)
-
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(**kwargs)
-
-
-class IndexView(PaginatedView):
+class IndexView(ListView):
     template_name = "index.html"
+    paginate_by = 10
     model = Question
+    queryset = model.objects.get_queryset()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        questions = self.model.objects.all()
-        context['questions'] = self.get_page(questions)
+        context.update(get_base_context().items())
         return context
 
 
-class HotQuestionsView(PaginatedView):
+class HotQuestionsView(ListView):
     template_name = "hot_questions.html"
     model = Question
+    paginate_by = 20
+    queryset = model.objects.get_most_hot()
 
     def get_context_data(self, **kwargs):
-        questions = self.model.objects.get_most_hot()
         context = super().get_context_data(**kwargs)
-        context['questions'] = self.get_page(questions)
+        context.update(get_base_context().items())
         return context
 
 
-class TagView(PaginatedView):
+
+class TagView(ListView):
     template_name = "tags.html"
     model = Question
+    paginate_by = 20
+
+    def get_queryset(self):
+        return self.model.by_tag.get(self.kwargs['tag_name'])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        questions = self.model.by_tag.get(context['tag_name'])
-        context['questions'] = self.get_page(questions)
+        context.update(get_base_context())
         return context
 
 
-class QuestionView(PaginatedView):
+class QuestionView(ListView):
     template_name = "question.html"
     model = Question
+    paginate_by = 20
+
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        question = self.model.objects.get_by_id(context['question_id'])
-        context['answers'] = self.get_page(question.answers.all()[::-1])
+        question = self.model.objects.get_by_id(self.kwargs['question_id'])
         context['question'] = question
+        queryset = question.answers.all()[::-1]
+        context.update(get_base_context())
         return context
 
 

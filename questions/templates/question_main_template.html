@@ -2,13 +2,17 @@
 <div class = "row pb-4 border-bottom">
   <div class="col-auto">
     <div class="row">
-      <img class="mb-3 ml-3" width="150" height="150" src="{{ form.author.upload.url }}">
+      {% if form.author.upload %}
+      <img class="mb-3 ml-3" width="100" height="100" src="{{ form.author.upload.url }}">
+      {% else %}
+      <img class="mb-3 ml-3" width="100" height="100" src="#">
+      {% endif %}
     </div>
     <div>
       <button type="button" class="btn btn-default" aria-label="Left Align">
         <i class="far fa-thumbs-up"></i>
       </button>
-      {{ form.count_likes }}
+      {{ form.votes.sum_rating }}
       <button type="button" class="btn btn-default">
         <i class="far fa-thumbs-down"></i>
       </button>
